@@ -1,0 +1,12 @@
+.friends {
+    width: 100%;
+}
+.friendElements {
+    display: flex;
+    justify-content: space-between;
+}
+
+.friends h3 {
+    font-size: 24px;
+    color: white;
+}
