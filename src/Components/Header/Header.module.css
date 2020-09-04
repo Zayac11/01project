@@ -2,3 +2,19 @@
     grid-area: h;
     background-color: yellow;
 }
+
+.loginBlock {
+    float: right;
+    display: flex;
+    align-items: center;
+}
+
+.loginBlock img {
+    width: 90px;
+    height: 60px;
+    margin-right: 10px;
+}
+
+.loginBlock a {
+   color: black;
+}

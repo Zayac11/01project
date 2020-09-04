@@ -4,10 +4,6 @@ import Person from "./Person/Person";
 
 class Friends extends React.Component {
 
-    constructor(props) {
-        super(props);
-    }
-
     friendElements = this.props.sidebarPage
         .map (m => <Person name={m.name} key={m.id} />)
 

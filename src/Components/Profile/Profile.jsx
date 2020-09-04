@@ -3,22 +3,14 @@ import s from './Profile.module.css'
 import ProfileInfo from "./ProfileInfo/ProfileInfo";
 import MyPostsContainer from "./MyPosts/MyPostsContainer";
 
-class Profile extends React.Component {
+const Profile = (props) => {
+    return (
 
-    render() {
-        return (
-            <div>
-                <ProfileInfo />
-                <MyPostsContainer
-                    // store={props.store}
-                    // profilePage={props.profilePage}
-                    // dispatch={props.dispatch}
-                    /*updateNewPostText={props.updateNewPostText}*/
-                    /*addPost={props.addPost}*/
-                />
-            </div>
-        );
-    }
+        <div>
+            <ProfileInfo profile={props.profile} findJob={props.findJob} findJobAC={props.findJobAC} noFindJobAC={props.noFindJobAC}/>
+            <MyPostsContainer />
+        </div>
+    );
 }
 
 export default Profile;

@@ -1,5 +1,8 @@
 const ADD_POST = 'ADD-POST';
 const UPDATE_NEW_POST_TEXT = 'UPDATE-NEW-POST-TEXT';
+const SET_USER_PROFILE = 'SET_USER_PROFILE';
+const SET_FIND_JOB = 'SET_FIND_JOB'
+const SET_NO_FIND_JOB = 'SET_NO_FIND_JOB'
 
 let initialState = {
     postsData:[
@@ -7,7 +10,9 @@ let initialState = {
         {id: 2, text: 'post 2', likeCount: '20'},
         {id: 3, text: 'post 3', likeCount: '25'}
     ],
-    newPostText: 'avatar'
+    newPostText: 'avatar',
+    profile: null,
+    findJob: false
 };
 
 const profileReducer = (state = initialState, action) => {
@@ -32,6 +37,25 @@ const profileReducer = (state = initialState, action) => {
                 newPostText: action.newText
             };
         }
+        case SET_USER_PROFILE: {
+            return {
+                ...state,
+                profile: action.profile,
+                findJob: action.profile.lookingForAJob
+            };
+        }
+        case SET_FIND_JOB: {
+            return {
+                ...state,
+                findJob: true
+            };
+        }
+        case SET_NO_FIND_JOB: {
+            return {
+                ...state,
+                findJob: false
+            };
+        }
         default:
             return state;
     }
@@ -39,29 +63,12 @@ const profileReducer = (state = initialState, action) => {
     //объект изменился, если поменялась ссылка на него(при копировании) или изменилась его внутренность
 //Создаём новый объект и делаем туда копию state, и изменяем её, далее connect сравнивает внутренности объектов и перерисовывает, если есть различия
 //Нам нельзя изменять пришедший к нам изначально state, если мы перепишем и изменим его, то connect будет сравнивать
-
-    // if(action.type === ADD_POST) {
-    //     let newPost = {
-    //         id: '5',
-    //         text: state.newPostText,
-    //         likeCount: '0'
-    //     };
-    //     state.postsData.push(newPost);
-    //     state.newPostText='';
-    //     // this._callSubscriber(this._state);
-    // } else if(action.type === UPDATE_NEW_POST_TEXT) {
-    //     state.newPostText = action.newText;
-    //     // this._callSubscriber(this._state);
-    // }
-    // return state;
 }
 
 export const addPostActionCreator = () => ({type: ADD_POST}) //return
-export const updateNewPostTextActionCreator = (text) => {
-    return {
-        type: UPDATE_NEW_POST_TEXT,
-        newText: text,
-    }
-}
+export const updateNewPostTextActionCreator = (text) => ({type: UPDATE_NEW_POST_TEXT, newText: text})
+export const setUserProfile = (profile) => ({type: SET_USER_PROFILE, profile})
+export const findJobAC = () => ({type: SET_FIND_JOB})
+export const noFindJobAC = () => ({type: SET_NO_FIND_JOB})
 
 export default profileReducer;
