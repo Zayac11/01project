@@ -2,6 +2,9 @@ import React from 'react';
 import s from './Dialogs.module.css';
 import DialogItem from "./DialogItem/DialogItem";
 import Message from "./Message/Message";
+import {AddMessageFormRedux} from "./AddMessageForm";
+
+
 
 let Dialogs = (props) => {
 
@@ -11,17 +14,12 @@ let Dialogs = (props) => {
     let messagesElements =
         props.messagesData.map(m => <Message message={m.message} key={m.id} />);
 
-    // создает ссылку на textarea
-    let newMessageElement = React.createRef()
+    // if(!props.isAuth) return <Redirect to={'/login'} />
 
-    let onAddMessage = () => {
-        props.addMessage();
+    const addNewMessage = (values) => {
+        props.addMessage(values.newMessageBody)
     }
 
-    let onMessageChange = () => {
-        let text =  newMessageElement.current.value;
-        props.updateNewMessageText(text);
-    }
     return (
         <div className={s.dialogs}>
             <div className={s.dialogsItems}>
@@ -32,12 +30,12 @@ let Dialogs = (props) => {
             <div className={s.messages}>
                 { messagesElements}
                 <div>
-                <textarea onChange={ onMessageChange} ref={ newMessageElement}
-                          value={ props.newMessageText} />
+
+                {/*<textarea onChange={ onMessageChange} ref={ newMessageElement}*/}
+                {/*          value={ props.newMessageText} />*/}
+                      <AddMessageFormRedux onSubmit={addNewMessage}/>
                 </div>
-                <div>
-                    <button onClick={  onAddMessage }>Add message</button>
-                </div>
+
                 {/*<Message message={messagesData[0].message} />*/}
             </div>
         </div>

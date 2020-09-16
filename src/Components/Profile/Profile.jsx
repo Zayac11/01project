@@ -7,7 +7,13 @@ const Profile = (props) => {
     return (
 
         <div>
-            <ProfileInfo profile={props.profile} findJob={props.findJob} findJobAC={props.findJobAC} noFindJobAC={props.noFindJobAC}/>
+            <ProfileInfo profile={props.profile}
+                         status={props.status}
+                         updateStatus={props.updateStatus}
+                         findJob={props.findJob}
+                         findJobAC={props.findJobAC}
+                         noFindJobAC={props.noFindJobAC}
+            />
             <MyPostsContainer />
         </div>
     );

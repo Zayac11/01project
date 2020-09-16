@@ -13,7 +13,7 @@ const Header = (props) => {
                 <img src={props.userAvatar != null ? props.userAvatar : defaultAvatar} alt=""/>
 
                 {props.isAuth
-                    ? props.login
+                    ? <div> {props.login} - <button onClick={props.logout}>logout</button> </div>
                     : <NavLink to={'/login'}>Login</NavLink>
                 }
             </div>

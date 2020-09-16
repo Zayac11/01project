@@ -2,13 +2,14 @@ import React from 'react';
 import {connect} from 'react-redux';
 import {
     setCurrentPage,
-
     getUsers,
     follow,
     unfollow
 } from '../../redux/users-reducer';
 import Users from './Users';
 import Preloader from '../Common/Preloader/Preloader';
+import {withAuthRedirect} from "../../hoc/WithAuthRedirect";
+import {compose} from "redux";
 
 class UsersContainer extends React.Component{
 
@@ -16,7 +17,6 @@ class UsersContainer extends React.Component{
     componentDidMount() {
         this.props.getUsers(this.props.currentPage, this.props.pageSize);
     }
-
     onPageChanged = (pageNumber) => {
         this.props.setCurrentPage(pageNumber);//устанавливаем текущую страницу
         this.props.getUsers(pageNumber, this.props.pageSize);
@@ -54,7 +54,12 @@ let mapStateToProps = (state) => {
     }
 }
 
-export default connect(mapStateToProps,
-    { setCurrentPage, getUsers, follow, unfollow })(UsersContainer);
+// export default withAuthRedirect(connect(mapStateToProps,
+//     { setCurrentPage, getUsers, follow, unfollow })(UsersContainer));
+
+export default compose(
+    connect(mapStateToProps,
+        { setCurrentPage, getUsers, follow, unfollow })
+)(UsersContainer)
 
 //     {id: 1, photoUrl:'https://vignette.wikia.nocookie.net/avatar/images/f/f4/3%D1%8521_%D0%90%D0%B0%D0%BD%D0%B3.jpg/revision/latest?cb=20110327121409&path-prefix=ru',

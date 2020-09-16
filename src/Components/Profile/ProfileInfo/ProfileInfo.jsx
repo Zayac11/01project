@@ -3,6 +3,7 @@ import s from './ProfileInfo.module.css'
 import Preloader from "../../Common/Preloader/Preloader";
 import findJob from '../../../assets/images/findjob.jpg'
 import noFindJob from '../../../assets/images/nofindjob.jpg'
+import ProfileStatus from './ProfileStatus'
 
 const ProfileInfo = (props) => {
     if(!props.profile) {
@@ -10,17 +11,20 @@ const ProfileInfo = (props) => {
     }
     return (
         <div>
-            <div>
-                <img
-                    src="https://jssors8.azureedge.net/demos/image-slider/img/faded-monaco-scenery-evening-dark-picjumbo-com-image.jpg" alt="Pic"/>
-            </div>
+            {/*<div>*/}
+            {/*    <img*/}
+            {/*        src="https://jssors8.azureedge.net/demos/image-slider/img/faded-monaco-scenery-evening-dark-picjumbo-com-image.jpg" alt="Pic"/>*/}
+            {/*</div>*/}
             <div className={s.descriptionBlock}>
                 <div>
                     <img src={props.profile.photos.large} alt=""/>
+                    <ProfileStatus status={props.status} updateStatus={props.updateStatus}/>
                 </div>
+
                 <div>
                     {props.profile.aboutMe}
                 </div>
+
                 <div className={s.findJob}>
                     <img src={props.findJob ? findJob : noFindJob}/>
                     {props.findJob ? <button onClick={() => {

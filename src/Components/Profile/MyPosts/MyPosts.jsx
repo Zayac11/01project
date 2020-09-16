@@ -1,6 +1,29 @@
 import React from 'react';
 import s from './MyPosts.module.css';
 import Post from "./Post/Post";
+import {Field, reduxForm} from "redux-form";
+import {maxLengthCreator, required} from "../../../utils/validators/validators";
+import {Textarea} from "../../Common/FormsControls/FormsControls";
+
+const maxLength10 = maxLengthCreator(10);
+
+
+const AddNewPostForm = (props) => {
+    return (
+        <form onSubmit={props.handleSubmit}>
+            <Field placeholder = 'Post'
+                   name = 'newPostText'
+                   component = {Textarea}
+                   validate = {[required, maxLength10]}
+            />
+            <div>
+                <button>Add post</button>
+            </div>
+        </form>
+    );
+}
+
+const AddNewPostFormRedux = reduxForm ({form: 'ProfileAddNewPostForm'})(AddNewPostForm)
 
 let MyPosts = (props) =>{
 
@@ -8,29 +31,21 @@ let MyPosts = (props) =>{
         props.postsData.map(p => <Post text={p.text} likeCount={p.likeCount} key={p.id} />)
 
     // создает ссылку на textarea
-    let newPostElement = React.createRef();
+    // let newPostElement = React.createRef();
 
-    let onAddPost = () => {
-        props.onAddPost();
+
+    const onSubmit = (values) => {
+        props.onAddPost(values.newPostText)
     }
-
-    let onPostChange = () => {
-        let text = newPostElement.current.value;
-        props.updateNewPostText(text);
-    }
-
     return (
         <div className={s.postsBlock}>
             <h3>My posts</h3>
             <div>
                 <div>
-                    {/*ссылка привязывается к textarea*/}
-                    <textarea onChange={onPostChange} ref={newPostElement}
-                              value={props.newPostText} />
+                    <AddNewPostFormRedux onSubmit = {onSubmit}/>
                 </div>
-                <div>
-                    <button onClick={ onAddPost }>Add post</button>
-                </div>
+
+
             </div>
             <div className={s.posts}>
                 {postsElement}

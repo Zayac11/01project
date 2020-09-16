@@ -1,5 +1,4 @@
 const ADD_MESSAGE = 'ADD-MESSAGE';
-const UPDATE_NEW_MESSAGE = 'UPDATE-NEW-MESSAGE';
 
 let initialState = {
     dialogsData: [
@@ -13,7 +12,6 @@ let initialState = {
         {id: 2, message: 'Hi HI'},
         {id: 3, message: 'How are you'}
     ],
-    newMessageText: 'avatar'
 };
 
 const dialogsReducer = (state = initialState, action) => {
@@ -21,52 +19,21 @@ const dialogsReducer = (state = initialState, action) => {
         case ADD_MESSAGE:
             let newMessage = {
                 id: 4,
-                message: state.newMessageText,
+                message: action.newMessageBody,
             };
             return {
                 ...state,
                 messagesData: [...state.messagesData, newMessage],
-                newMessageText: ''
             };
-            // stateCopy.messagesData.push(newMessage);
-            // stateCopy.newMessageText = '';
-
-        case UPDATE_NEW_MESSAGE:
-            return {
-                ...state,
-                newMessageText: action.newText
-            };
-            // stateCopy.newMessageText = action.newText;
-
         default:
             return state;
     }
-
-    // if(action.type === ADD_MESSAGE) {
-    //     let newMessage = {
-    //         id: '4',
-    //         message: state.newMessageText,
-    //     };
-    //     state.messagesData.push(newMessage);
-    //     state.newMessageText='';
-    //     // this._callSubscriber(this._state);
-    // } else if(action.type === UPDATE_NEW_MESSAGE) {
-    //     state.newMessageText = action.newText;
-    //     // this._callSubscriber(this._state);
-    // }
-    // return state;
 }
-
-export const addMessageActionCreator = () => {
+export const addMessageActionCreator = (newMessageBody) => {
     return {
-        type: ADD_MESSAGE,
+        type: ADD_MESSAGE, newMessageBody
     }
 }
-export const updateNewMessageActionCreator = (text) => {
-    return {
-        type: UPDATE_NEW_MESSAGE,
-        newText: text,
-    }
-}
+
 
 export default dialogsReducer;
