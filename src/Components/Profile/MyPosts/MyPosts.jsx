@@ -7,7 +7,6 @@ import {Textarea} from "../../Common/FormsControls/FormsControls";
 
 const maxLength10 = maxLengthCreator(10);
 
-
 const AddNewPostForm = (props) => {
     return (
         <form onSubmit={props.handleSubmit}>
@@ -25,14 +24,10 @@ const AddNewPostForm = (props) => {
 
 const AddNewPostFormRedux = reduxForm ({form: 'ProfileAddNewPostForm'})(AddNewPostForm)
 
-let MyPosts = (props) =>{
+const MyPosts = React.memo(props => {
 
     let postsElement =
-        props.postsData.map(p => <Post text={p.text} likeCount={p.likeCount} key={p.id} />)
-
-    // создает ссылку на textarea
-    // let newPostElement = React.createRef();
-
+        props.postsData.map(p => <Post text={p.text} likeCount={p.likeCount} key={p.id}/>)
 
     const onSubmit = (values) => {
         props.onAddPost(values.newPostText)
@@ -42,7 +37,7 @@ let MyPosts = (props) =>{
             <h3>My posts</h3>
             <div>
                 <div>
-                    <AddNewPostFormRedux onSubmit = {onSubmit}/>
+                    <AddNewPostFormRedux onSubmit={onSubmit}/>
                 </div>
 
 
@@ -54,6 +49,6 @@ let MyPosts = (props) =>{
 
         </div>
     );
-}
+});
 
 export default MyPosts;

@@ -3,26 +3,22 @@ import s from './ProfileInfo.module.css'
 import Preloader from "../../Common/Preloader/Preloader";
 import findJob from '../../../assets/images/findjob.jpg'
 import noFindJob from '../../../assets/images/nofindjob.jpg'
-import ProfileStatus from './ProfileStatus'
+import ProfileStatusWithHooks from "./ProfileStatusWithHooks";
 
-const ProfileInfo = (props) => {
-    if(!props.profile) {
+const ProfileInfo = ({profile, status, updateStatus, ...props}) => {
+    if(!profile) {
         return <Preloader />
     }
     return (
         <div>
-            {/*<div>*/}
-            {/*    <img*/}
-            {/*        src="https://jssors8.azureedge.net/demos/image-slider/img/faded-monaco-scenery-evening-dark-picjumbo-com-image.jpg" alt="Pic"/>*/}
-            {/*</div>*/}
             <div className={s.descriptionBlock}>
                 <div>
-                    <img src={props.profile.photos.large} alt=""/>
-                    <ProfileStatus status={props.status} updateStatus={props.updateStatus}/>
+                    <img src={profile.photos.large} alt=""/>
+                    <ProfileStatusWithHooks status={status} updateStatus={updateStatus}/>
                 </div>
 
                 <div>
-                    {props.profile.aboutMe}
+                    {profile.aboutMe}
                 </div>
 
                 <div className={s.findJob}>

@@ -1,11 +1,3 @@
 .item img {
     width: 150px;
 }
-
-.selectedPage {
-    font-weight: bold;
-}
-
-.itemPage {
-    cursor: pointer;
-}
