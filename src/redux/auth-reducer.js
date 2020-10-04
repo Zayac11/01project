@@ -38,9 +38,8 @@ export const setUserAvatar = (userAvatar) => ({type: SET_USER_AVATAR, userAvatar
 // export const toggleIsFetching = (isFetching) => ({type: TOGGLE_IS_FETCHING, isFetching })
 
 export const getUserAuthData = () => {
-    return (dispatch) => {
-    return authAPI.me()
-        .then(data => {
+    return async (dispatch) => {
+        let data = await authAPI.me()
             if(data.resultCode === 0) {
                 let {id, email, login} = data.data;
                 dispatch(setAuthUserData(id, email, login, true));
@@ -49,32 +48,27 @@ export const getUserAuthData = () => {
                         dispatch(setUserAvatar(response.data.photos.small));
                     })
             }
-        });
     }
 }
 
 export const login = (email, password, rememberMe) => {
-    return (dispatch) => {
-    authAPI.login(email, password, rememberMe)
-       .then(response => {
-           if(response.data.resultCode === 0) {
-               dispatch(getUserAuthData()) //проверить еще раз после логина
-           } else {
-               let message = response.data.messages.length > 0 ? response.data.messages[0] : "Some error";
-               dispatch(stopSubmit('login',{_error: message}));
-           }
-       });
+    return async (dispatch) => {
+        let response = await authAPI.login(email, password, rememberMe)
+        if(response.data.resultCode === 0) {
+            dispatch(getUserAuthData()) //проверить еще раз после логина
+        } else {
+            let message = response.data.messages.length > 0 ? response.data.messages[0] : "Some error";
+            dispatch(stopSubmit('login',{_error: message}));
+        }
     }
 }
 
 export const logout = () => {
-    return (dispatch) => {
-    authAPI.logout()
-        .then(response => {
-            if(response.data.resultCode === 0) {
-                dispatch(setAuthUserData(null, null, null, false));
-            }
-        });
+    return async (dispatch) => {
+        let response = await authAPI.logout()
+        if(response.data.resultCode === 0) {
+            dispatch(setAuthUserData(null, null, null, false));
+        }
     }
 }
 
