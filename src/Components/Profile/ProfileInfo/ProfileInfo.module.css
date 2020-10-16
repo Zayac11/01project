@@ -4,3 +4,6 @@
 .findJob img {
     width: 180px;
 }
+.mainPhoto {
+    max-width: 200px;
+}
