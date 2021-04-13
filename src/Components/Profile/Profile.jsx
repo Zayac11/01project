@@ -15,6 +15,7 @@ const Profile = (props) => {
                          noFindJobAC={props.noFindJobAC}
                          isOwner={props.isOwner}
                          savePhoto={props.savePhoto}
+                         saveProfile={props.saveProfile}
             />
             <MyPostsContainer />
         </div>

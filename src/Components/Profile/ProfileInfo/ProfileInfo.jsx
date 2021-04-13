@@ -1,13 +1,11 @@
-import React, {useEffect, useState} from 'react';
+import React, {useState} from 'react';
 import s from './ProfileInfo.module.css'
 import Preloader from "../../Common/Preloader/Preloader";
-import findJob from '../../../assets/images/findjob.jpg'
-import noFindJob from '../../../assets/images/nofindjob.jpg'
 import ProfileStatusWithHooks from "./ProfileStatusWithHooks";
 import userPhoto from '../../../assets/images/Aang.jpg';
 import ProfileDataFormReduxForm from "./ProfileDataForm";
 
-const ProfileInfo = ({profile, status, updateStatus, savePhoto, ...props}) => {
+const ProfileInfo = ({profile, status, updateStatus, savePhoto, saveProfile, ...props}) => {
 
     let [editMode, setEditMode] = useState(false); //возвращает массив
     // useEffect( () => {
@@ -25,14 +23,23 @@ const ProfileInfo = ({profile, status, updateStatus, savePhoto, ...props}) => {
         }
     }
 
+    const onSubmit = (formData) => {
+        saveProfile(formData)
+            .then(() => {
+                setEditMode(false)
+            })
+        // console.log(formData)
+    }
+
     return (
         <div className={s.descriptionBlock}>
             <div>
                 <img src={profile.photos.large || userPhoto} className={s.mainPhoto} alt=""/>
-                {props.isOwner && <input type="file" onChange={onMainPhotoSelected}/>}
+                {props.isOwner && <input type="file" onChange={onMainPhotoSelected}/>
+}
 
                 { editMode
-                    ? <ProfileDataFormReduxForm profile={profile} />
+                    ? <ProfileDataFormReduxForm initialValues={profile} profile={profile} onSubmit={onSubmit} />
                     : <ProfileData profile={profile} isOwner={props.isOwner} goToEditMode={() => {setEditMode(true)}}/> }
 
                 <ProfileStatusWithHooks status={status} updateStatus={updateStatus}/>

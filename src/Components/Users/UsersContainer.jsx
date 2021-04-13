@@ -14,7 +14,7 @@ import {
     getFollowingInProgress,
     getIsFetching,
     getPageSize,
-    getTotalUsersCount, getUsers
+    getTotalUsersCount, getUsers, getUsersSelector
 } from "../../redux/users-selectors.js";
 
 class UsersContainer extends React.Component{
@@ -31,6 +31,7 @@ class UsersContainer extends React.Component{
 
     //Сначала render, потом componentDidMount
     render() {
+        console.log('a')
         return (
             <>
                 { this.props.isFetching ? <Preloader /> : null } {/*svg картинка загрузки*/}
@@ -72,13 +73,8 @@ let mapStateToProps = (state) => {
     }
 }
 
-// export default withAuthRedirect(connect(mapStateToProps,
-//     { setCurrentPage, getUsers, follow, unfollow })(UsersContainer));
-
-
 export default compose(
     connect(mapStateToProps,
         { setCurrentPage, requestUsers, follow, unfollow }))
     (UsersContainer)
 
-//     {id: 1, photoUrl:'https://vignette.wikia.nocookie.net/avatar/images/f/f4/3%D1%8521_%D0%90%D0%B0%D0%BD%D0%B3.jpg/revision/latest?cb=20110327121409&path-prefix=ru',

@@ -1,7 +1,15 @@
 import React from 'react';
 import Profile from "./Profile";
 import {connect} from "react-redux";
-import {findJobAC, getStatus, getUserProfile, noFindJobAC, savePhoto, updateStatus} from "../../redux/profile-reducer";
+import {
+    findJobAC,
+    getStatus,
+    getUserProfile,
+    noFindJobAC,
+    savePhoto,
+    saveProfile,
+    updateStatus
+} from "../../redux/profile-reducer";
 import {withRouter} from "react-router-dom";
 // import {withAuthRedirect} from "../../hoc/WithAuthRedirect";
 import {compose} from "redux";
@@ -13,7 +21,7 @@ class ProfileContainer extends React.Component {
         if (!userId) {
             userId = this.props.id;
             if(!userId) {
-                this.props.history.push("/login");
+                this.props.history.push("/login"); //Редирект
             }
         }
         this.props.getUserProfile(userId);
@@ -35,6 +43,7 @@ class ProfileContainer extends React.Component {
             <div>
                 <Profile {...this.props}
                          isOwner={!this.props.match.params.userId}
+                         saveProfile={this.props.saveProfile}
                          updateStatus={this.props.updateStatus}
                          savePhoto={this.props.savePhoto}
                 />
@@ -55,7 +64,7 @@ let mapStateToProps = (state) => {
 }
 
 export default compose(
-    connect(mapStateToProps, {findJobAC, noFindJobAC, getUserProfile, getStatus, updateStatus, savePhoto}),
+    connect(mapStateToProps, {findJobAC, noFindJobAC, getUserProfile, getStatus, updateStatus, savePhoto, saveProfile}),
     withRouter,
     // withAuthRedirect
 )(ProfileContainer)

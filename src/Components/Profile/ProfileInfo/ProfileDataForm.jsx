@@ -1,11 +1,19 @@
 import React from 'react';
 import {createField, Input, Textarea} from "../../Common/FormsControls/FormsControls";
 import {reduxForm} from "redux-form";
+import s from './ProfileInfo.module.css'
+import style from './../../Common/FormsControls/FormsControls.module.css'
 
-const  ProfileDataForm = ({profile}) => {
+const  ProfileDataForm = ({handleSubmit, profile, error}) => { //Ошибка попадает в редакс форму под словом error
     return (
-        <form>
-            <div><button onClick={() => {}} >Save</button></div>
+        <form onSubmit={handleSubmit}>
+            <div><button>Save</button></div>
+            {
+                error &&
+                <div className={style.formSummaryError}>
+                    {error}
+                </div>
+            }
             <div>
                 <b>Full name</b>: {createField("Full Name", "fullName", [], Input)}
             </div>
@@ -18,11 +26,13 @@ const  ProfileDataForm = ({profile}) => {
             <div>
                 <b>About me</b>: {createField("About Me", "aboutMe", [], Textarea)}
             </div>
-            {/*<div>*/}
-            {/*    <b>Contacts</b>: {Object.keys(profile.contacts).map(key => {*/}
-            {/*    return <Contact key={key} contactTitle={key} contactValue={profile.contacts[key]}/>*/}
-            {/*})}*/}
-            {/*</div>*/}
+            <div>
+                <b>Contacts</b>: {Object.keys(profile.contacts).map(key => { //keys - из объекта в массив
+                return <div key={key} className={s.contact}>
+                    <b>{key}:</b> {createField(key, `contacts.` + key, [], Input)}
+                </div>
+            })}
+            </div>
         </form>
     )
 }

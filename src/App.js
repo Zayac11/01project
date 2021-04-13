@@ -18,9 +18,20 @@ const ProfileContainer = React.lazy(() => import('./Components/Profile/ProfileCo
 const DialogsContainer = React.lazy(() => import('./Components/Dialogs/DialogsContainer'));
 
 class App extends React.Component {
+    catchAllUnhandledErrors = (reason, promise) => {
+        alert('some error occured')
+        // console.error(promiseRejectionEvent)
+    }
+
     componentDidMount() {
         this.props.initializeApp();
+        window.addEventListener('unhandlerejection', this.catchAllUnhandledErrors)
     }
+
+    componentWillUnmount() {
+        window.removeEventListener('unhandlerejection', this.catchAllUnhandledErrors)
+    }
+
     // Мы не отрисовываем ничего до того момента, пока не инициализировались, поэтому при перезагрузке профиля мы его видим сразу
     render() {
         if(!this.props.initialized) {

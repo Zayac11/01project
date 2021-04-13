@@ -1,10 +1,10 @@
 import {createSelector} from "reselect";
 
-const getUsersSelector = (state) => {
+export const getUsersSelector = (state) => {
     return state.usersPage.users;
 }
 
-export const getUsers= createSelector(getUsersSelector, (users) => { //Не будет запускаться, если массив юзеров не поменяется
+export const getUsers = createSelector(getUsersSelector, (users) => { //Не будет запускаться, если массив юзеров не поменяется
     return users.filter(u => true);
 })
 

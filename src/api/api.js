@@ -1,12 +1,13 @@
 import * as axios from "axios";
 
-let instance = axios.create({
-    withCredentials: true,
-    baseURL: 'https://social-network.samuraijs.com/api/1.0/',
-    headers: {
-        "API-KEY": '3c506123-7591-4f5d-a26a-91140af2545a'
-    }
-})
+    let instance = axios.create({
+        withCredentials: true,
+        baseURL: 'https://social-network.samuraijs.com/api/1.0/',
+        // baseURL: 'http://127.0.0.1:8000/',
+        headers: {
+            "API-KEY": '3c506123-7591-4f5d-a26a-91140af2545as'
+        }
+    })
 
 export const usersAPI = {
     getUsers(currentPage = 1, pageSize = 10) {
@@ -28,7 +29,6 @@ export const usersAPI = {
         return instance.delete(`follow/${userId}`)
             .then(response => response.data)
     },
-
 }
 
 export const authAPI = {
@@ -37,13 +37,13 @@ export const authAPI = {
             .then(response => response.data)
     },
 
-    login(email, password, rememberMe = false) {
-        return instance.post(`auth/login`, { email, password, rememberMe })
+    login(email, password, rememberMe = false, captcha = null) {
+        return instance.post(`auth/login`, { email, password, rememberMe, captcha })
     },
 
     logout() {
         return instance.delete(`auth/login`)
-    }
+    },
 
 }
 
@@ -65,6 +65,17 @@ export const profileAPI = {
                 'Content-Type' : 'multipart/form-data'
             }
         })
+    },
+    saveProfile(profile) {
+        return instance.put(`profile`, profile)
+    },
+}
+
+
+export const securityAPI = {
+    getCaptchaUrl() {
+        return instance.get(`security/get-captcha-url`)
+            .then(response => response.data)
     },
 }
 
