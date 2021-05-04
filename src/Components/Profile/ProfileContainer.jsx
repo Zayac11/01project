@@ -69,7 +69,7 @@ export default compose(
     // withAuthRedirect
 )(ProfileContainer)
 
-//withRouter закидывает в компоненту данные url, connect закидывает в компоненду state и dispatch
+//withRouter закидывает в компоненту данные url, connect закидывает в компоненту state и dispatch
 // let WithUrlDataContainerComponent = withRouter(AuthRedirectComponent);
 //
 // export default connect(mapStateToProps, {findJobAC, noFindJobAC, getUserProfile})(WithUrlDataContainerComponent);

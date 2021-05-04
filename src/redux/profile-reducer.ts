@@ -19,7 +19,6 @@ let initialState = {
     findJob: false,
     status: '',
 };
-
 export type InitialStateType = typeof initialState
 
 const profileReducer = (state = initialState, action: any):InitialStateType => {

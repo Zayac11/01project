@@ -1,9 +1,21 @@
-import React from 'react';
-import s from './Profile.module.css'
+import React, {FC} from 'react';
 import ProfileInfo from "./ProfileInfo/ProfileInfo";
 import MyPostsContainer from "./MyPosts/MyPostsContainer";
+import {ProfileType} from "../../types/types";
 
-const Profile = (props) => {
+type PropsType = {
+    profile: ProfileType
+    status: string
+    updateStatus: (status:string) => void
+    findJob: boolean
+    findJobAC: () => void
+    noFindJobAC: () => void
+    isOwner: boolean
+    savePhoto: (file:any) => void
+    saveProfile: (profile:ProfileType) => Promise<any>
+}
+
+const Profile: FC<PropsType> = (props) => {
     return (
 
         <div>

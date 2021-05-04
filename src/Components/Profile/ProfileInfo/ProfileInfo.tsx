@@ -1,11 +1,24 @@
-import React, {useState} from 'react';
+import React, {ChangeEvent, FC, useState} from 'react';
 import s from './ProfileInfo.module.css'
 import Preloader from "../../Common/Preloader/Preloader";
 import ProfileStatusWithHooks from "./ProfileStatusWithHooks";
 import userPhoto from '../../../assets/images/Aang.jpg';
 import ProfileDataFormReduxForm from "./ProfileDataForm";
+import {ProfileType} from "../../../types/types";
 
-const ProfileInfo = ({profile, status, updateStatus, savePhoto, saveProfile, ...props}) => {
+type PropsType = {
+    profile: ProfileType
+    status: string
+    updateStatus: (status:string) => void
+    findJob: boolean
+    findJobAC: () => void
+    noFindJobAC: () => void
+    isOwner: boolean
+    savePhoto: (file:any) => void
+    saveProfile: (profile:ProfileType) => Promise<any>
+}
+
+const ProfileInfo: FC<PropsType> = ({profile, status, updateStatus, savePhoto, saveProfile, ...props}) => {
 
     let [editMode, setEditMode] = useState(false); //возвращает массив
     // useEffect( () => {
@@ -17,19 +30,20 @@ const ProfileInfo = ({profile, status, updateStatus, savePhoto, saveProfile, ...
         return <Preloader />
     }
 
-    const onMainPhotoSelected = (e) => {
+    const onMainPhotoSelected = (e: any) => {
         if(e.target.files.length) {
             savePhoto(e.target.files[0])
         }
     }
 
-    const onSubmit = (formData) => {
+    const onSubmit = (formData: ProfileType) => {
         saveProfile(formData)
             .then(() => {
                 setEditMode(false)
             })
         // console.log(formData)
     }
+
 
     return (
         <div className={s.descriptionBlock}>
@@ -39,6 +53,7 @@ const ProfileInfo = ({profile, status, updateStatus, savePhoto, saveProfile, ...
 }
 
                 { editMode
+                    // @ts-ignore
                     ? <ProfileDataFormReduxForm initialValues={profile} profile={profile} onSubmit={onSubmit} />
                     : <ProfileData profile={profile} isOwner={props.isOwner} goToEditMode={() => {setEditMode(true)}}/> }
 
@@ -59,7 +74,12 @@ const ProfileInfo = ({profile, status, updateStatus, savePhoto, saveProfile, ...
     );
 }
 
-const ProfileData = ({profile, isOwner, goToEditMode}) => {
+type ProfileDataPropsType = {
+    profile: ProfileType
+    isOwner: boolean
+    goToEditMode: () => void
+}
+const ProfileData: FC<ProfileDataPropsType> = ({profile, isOwner, goToEditMode}) => {
     return (
         <div>
             {isOwner && <div><button onClick={goToEditMode}>Edit</button></div>}
@@ -78,6 +98,7 @@ const ProfileData = ({profile, isOwner, goToEditMode}) => {
             </div>
             <div>
                 <b>Contacts</b>: {Object.keys(profile.contacts).map(key => {
+            // @ts-ignore
                 return <Contact key={key} contactTitle={key} contactValue={profile.contacts[key]}/>
             })}
             </div>
@@ -85,8 +106,12 @@ const ProfileData = ({profile, isOwner, goToEditMode}) => {
     )
 }
 
+type ContactPropsType = {
+    contactTitle: string
+    contactValue: string | null
+}
 
-const Contact = ({contactTitle, contactValue}) => {
+const Contact: FC<ContactPropsType> = ({contactTitle, contactValue}) => {
     return (
         <div className={s.contact}>
             <b>
