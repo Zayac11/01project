@@ -1,5 +1,6 @@
-import {authAPI, profileAPI, usersAPI} from "../api/api";
+import {profileAPI, usersAPI} from "../api/api";
 import {stopSubmit} from "redux-form";
+import {PhotosType, PostType, ProfileType} from "../types/types";
 
 const ADD_POST = 'ADD-POST';
 const SET_USER_PROFILE = 'SET_USER_PROFILE';
@@ -13,13 +14,15 @@ let initialState = {
         {id: 1, text: 'post 1', likeCount: '15'},
         {id: 2, text: 'post 2', likeCount: '20'},
         {id: 3, text: 'post 3', likeCount: '25'}
-    ],
-    profile: null,
+    ] as Array<PostType>,
+    profile: null as ProfileType | null,
     findJob: false,
     status: '',
 };
 
-const profileReducer = (state = initialState, action) => {
+export type InitialStateType = typeof initialState
+
+const profileReducer = (state = initialState, action: any):InitialStateType => {
 
     switch (action.type) {
         case ADD_POST: {
@@ -62,40 +65,68 @@ const profileReducer = (state = initialState, action) => {
         case SAVE_PHOTO_SUCCESS: {
             return {
                 ...state,
-                profile: {...state.profile, photos: action.photos}
+                profile: {...state.profile, photos: action.photos} as ProfileType
             };
         }
         default:
             return state;
     }
-    //observer connect'a смотрит на изменение объекта и перерисовывает, если он изменился
-    //объект изменился, если поменялась ссылка на него(при копировании) или изменилась его внутренность
+//observer connect'a смотрит на изменение объекта и перерисовывает, если он изменился
+//объект изменился, если поменялась ссылка на него(при копировании) или изменилась его внутренность
 //Создаём новый объект и делаем туда копию state, и изменяем её, далее connect сравнивает внутренности объектов и перерисовывает, если есть различия
 //Нам нельзя изменять пришедший к нам изначально state, если мы перепишем и изменим его, то connect будет сравнивать
 }
 
-export const addPostActionCreator = (newPostText) => ({type: ADD_POST, newPostText}) //return
-export const setUserProfile = (profile) => ({type: SET_USER_PROFILE, profile})
-export const findJobAC = () => ({type: SET_FIND_JOB})
-export const noFindJobAC = () => ({type: SET_NO_FIND_JOB})
-export const setStatus = (status) => ({type: SET_STATUS, status})
-export const savePhotoSuccess = (photos) => ({type: SAVE_PHOTO_SUCCESS, photos})
+type AddPostActionCreatorActionType = {
+    type: typeof ADD_POST
+    newPostText: string
+}
+export const addPostActionCreator = (newPostText:string): AddPostActionCreatorActionType =>
+    ({type: ADD_POST, newPostText})
+type SetUserProfileActionType = {
+    type: typeof SET_USER_PROFILE
+    profile: ProfileType
+}
+export const setUserProfile = (profile:ProfileType):SetUserProfileActionType =>
+    ({type: SET_USER_PROFILE, profile})
+type SetStatusActionType = {
+    type: typeof SET_STATUS
+    status: string
+}
+export const setStatus = (status: string):SetStatusActionType =>
+    ({type: SET_STATUS, status})
+type FindJobACActionType = {
+    type: typeof SET_FIND_JOB
+}
+export const findJobAC = ():FindJobACActionType =>
+    ({type: SET_FIND_JOB})
+type NoFindJobACActionType = {
+    type: typeof SET_NO_FIND_JOB
+}
+export const noFindJobAC = ():NoFindJobACActionType =>
+    ({type: SET_NO_FIND_JOB})
+type SavePhotoSuccessActionType = {
+    type: typeof SAVE_PHOTO_SUCCESS
+    photos: PhotosType
+}
+export const savePhotoSuccess = (photos: PhotosType):SavePhotoSuccessActionType =>
+    ({type: SAVE_PHOTO_SUCCESS, photos})
 
-export const getUserProfile = (userId) => {
-    return async (dispatch) => {
+export const getUserProfile = (userId:number) => {
+    return async (dispatch:any) => {
         let response = await usersAPI.getProfile(userId)
         dispatch(setUserProfile(response.data));
     }
 }
 
-export const getStatus = (userId) => {
-    return async(dispatch) => {
+export const getStatus = (userId:number) => {
+    return async(dispatch:any) => {
         let response = await profileAPI.getStatus(userId)
         dispatch(setStatus(response.data))
     }
 }
-export const updateStatus = (status) => {
-    return async (dispatch) => {
+export const updateStatus = (status:string) => {
+    return async (dispatch:any) => {
         try{
             let response = await profileAPI.updateStatus(status)
             if(response.data.resultCode === 0) {
@@ -108,8 +139,8 @@ export const updateStatus = (status) => {
         }
     }
 }
-export const savePhoto = (file) => {
-    return async (dispatch) => {
+export const savePhoto = (file:any) => {
+    return async (dispatch:any) => {
         let response = await profileAPI.savePhoto(file)
 
         if(response.data.resultCode === 0) {
@@ -117,8 +148,8 @@ export const savePhoto = (file) => {
         }
     }
 }
-export const saveProfile = (profile) => {
-    return async (dispatch, getState) => {
+export const saveProfile = (profile:ProfileType) => {
+    return async (dispatch:any, getState:any) => {
         let userId = getState().auth.id
         let response = await profileAPI.saveProfile(profile)
         if(response.data.resultCode === 0) {
