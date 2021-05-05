@@ -119,15 +119,15 @@ type ThunkType = ThunkAction<Promise<void>, AppStateType, unknown, ActionsTypes>
 
 export const getUserProfile = (userId: number | null): ThunkType => {
     return async (dispatch) => {
-        let response = await usersAPI.getProfile(userId)
-        dispatch(setUserProfile(response.data));
+        let data = await usersAPI.getProfile(userId)
+        dispatch(setUserProfile(data));
     }
 }
 
 export const getStatus = (userId:number): ThunkType => {
     return async(dispatch) => {
-        let response = await profileAPI.getStatus(userId)
-        dispatch(setStatus(response.data))
+        let data = await profileAPI.getStatus(userId)
+        dispatch(setStatus(data))
     }
 }
 export const updateStatus = (status:string): ThunkType => {
@@ -143,25 +143,25 @@ export const updateStatus = (status:string): ThunkType => {
         }
     }
 }
-export const savePhoto = (file:any): ThunkType => {
+export const savePhoto = (file: File): ThunkType => {
     return async (dispatch) => {
-        let response = await profileAPI.savePhoto(file)
+        let data = await profileAPI.savePhoto(file)
 
-        if(response.data.resultCode === 0) {
-            dispatch(savePhotoSuccess(response.data.data.photos))
+        if(data.resultCode === 0) {
+            dispatch(savePhotoSuccess(data.data))
         }
     }
 }
 export const saveProfile = (profile:ProfileType): ThunkType => {
     return async (dispatch, getState) => {
         let userId = getState().auth.id
-        let response = await profileAPI.saveProfile(profile)
-        if(response.data.resultCode === 0) {
+        let data = await profileAPI.saveProfile(profile)
+        if(data.resultCode === 0) {
             dispatch(getUserProfile(userId))
         }
         else {
-            dispatch(stopSubmit('edit-profile',{_error: response.data.messages[0]})); //Общая ошибка
-            return Promise.reject(response.data.messages[0])
+            dispatch(stopSubmit('edit-profile',{_error: data.messages[0]})); //Общая ошибка
+            return Promise.reject(data.messages[0])
         }
     }
 }

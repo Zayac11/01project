@@ -18,7 +18,7 @@ export type ContactsType = {
     mainLink: string | null
 }
 export type ProfileType = {
-    aboutMe: string;
+    aboutMe?: string;
     userId: number
     lookingForAJob: boolean
     lookingForAJobDescription: string

@@ -1,5 +1,5 @@
 import aang from '../assets/images/Aang.jpg'
-import {authAPI, securityAPI, usersAPI} from "../api/api";
+import {authAPI, ResultCodeForCaptcha, ResultCodesEnum, securityAPI, usersAPI} from "../api/api";
 import {stopSubmit} from "redux-form";
 import {ThunkAction} from "redux-thunk";
 import {AppStateType} from "./redux-store";
@@ -69,9 +69,9 @@ export const setAuthUserData = (id: number | null, email: string | null, login:s
     ({type: SET_USER_DATA, payload: {id, email, login, isAuth}})
 type SetUserAvatarActionType = {
     type: typeof SET_USER_AVATAR
-    userAvatar: string
+    userAvatar: string | null
 }
-export const setUserAvatar = (userAvatar: string): SetUserAvatarActionType =>
+export const setUserAvatar = (userAvatar: string | null): SetUserAvatarActionType =>
     ({type: SET_USER_AVATAR, userAvatar})
 type GetCaptchaUrlSuccessActionType = {
     type: typeof GET_CAPTCHA_URL_SUCCESS
@@ -86,14 +86,13 @@ type ThunkType = ThunkAction<Promise<void>, AppStateType, unknown, ActionsTypes>
 export const getUserAuthData = (): ThunkType => {
     return async (dispatch) => {
         let data = await authAPI.me()
-            if(data.resultCode === 0) {
+            if(data.resultCode === ResultCodesEnum.Success) {
                 let {id, email, login} = data.data;
                 dispatch(setAuthUserData(id, email, login, true));
 
                 let response = await usersAPI.getProfile(id)
-                if(response.resultCode === 0) {
-                    dispatch(setUserAvatar(response.data.photos.small));
-                }
+                dispatch(setUserAvatar(response.photos.small));
+
             }
     }
 }
@@ -101,12 +100,12 @@ export const getUserAuthData = (): ThunkType => {
 export const login = (email: string, password:string, rememberMe:boolean, captcha:string): ThunkType => {
     return async (dispatch) => {
         let response = await authAPI.login(email, password, rememberMe, captcha)
-        if(response.data.resultCode === 0) {
+        if(response.data.resultCode === ResultCodesEnum.Success) {
             //success, get auth data
             dispatch(getUserAuthData()) //проверить еще раз после логина
         }
         else {
-            if(response.data.resultCode === 10) {
+            if(response.data.resultCode === ResultCodeForCaptcha.CaptchaIsRequired) {
                 dispatch(getCaptchaUrl())
             }
             let message = response.data.messages.length > 0 ? response.data.messages[0] : "Some error";
@@ -118,9 +117,9 @@ export const login = (email: string, password:string, rememberMe:boolean, captch
 
 export const getCaptchaUrl = (): ThunkType => {
     return async (dispatch) => {
-        let response = await securityAPI.getCaptchaUrl()
+        let data = await securityAPI.getCaptchaUrl()
 
-        let captchaUrl = response.url
+        let captchaUrl = data.url
 
         dispatch(getCaptchaUrlSuccess(captchaUrl))
     }
