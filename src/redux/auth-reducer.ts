@@ -1,6 +1,8 @@
 import aang from '../assets/images/Aang.jpg'
 import {authAPI, securityAPI, usersAPI} from "../api/api";
 import {stopSubmit} from "redux-form";
+import {ThunkAction} from "redux-thunk";
+import {AppStateType} from "./redux-store";
 
 const SET_USER_DATA = 'SET_USER_DATA';
 const GET_CAPTCHA_URL_SUCCESS = 'GET_CAPTCHA_URL_SUCCESS';
@@ -29,13 +31,12 @@ let initialState = {
 
 
 //reducer возвращает стейт такого же значения, что и принимает, чтобы мы в кейсах не дописывали новые поля объекту
-const authReducer = (state = initialState, action: any):InitialStateType2  => {
+const authReducer = (state = initialState, action: ActionsTypes):InitialStateType2  => {
     switch (action.type) {
         case SET_USER_DATA:
             return {
                 ...state,
                 ...action.payload,
-                jsakdjaskd: 'asdasd'
             }
         case GET_CAPTCHA_URL_SUCCESS:
             return {
@@ -52,29 +53,26 @@ const authReducer = (state = initialState, action: any):InitialStateType2  => {
     }
 }
 
+type ActionsTypes = GetCaptchaUrlSuccessActionType | SetAuthUserDataActionType | SetUserAvatarActionType
+
 type SetAuthUserDataActionTypePayloadType = {
     id: number | null
     email: string | null
     login: string | null
     isAuth: boolean
 }
-
 type SetAuthUserDataActionType = {
     type: typeof SET_USER_DATA
     payload: SetAuthUserDataActionTypePayloadType
 }
 export const setAuthUserData = (id: number | null, email: string | null, login:string | null, isAuth:boolean):SetAuthUserDataActionType =>
     ({type: SET_USER_DATA, payload: {id, email, login, isAuth}})
-
-
 type SetUserAvatarActionType = {
     type: typeof SET_USER_AVATAR
     userAvatar: string
 }
 export const setUserAvatar = (userAvatar: string): SetUserAvatarActionType =>
     ({type: SET_USER_AVATAR, userAvatar})
-
-
 type GetCaptchaUrlSuccessActionType = {
     type: typeof GET_CAPTCHA_URL_SUCCESS
     captchaUrl: string
@@ -83,8 +81,10 @@ export const getCaptchaUrlSuccess = (captchaUrl: string):GetCaptchaUrlSuccessAct
     ({type: GET_CAPTCHA_URL_SUCCESS, captchaUrl})
 // export const toggleIsFetching = (isFetching) => ({type: TOGGLE_IS_FETCHING, isFetching })
 
-export const getUserAuthData = () => {
-    return async (dispatch: any) => {
+type ThunkType = ThunkAction<Promise<void>, AppStateType, unknown, ActionsTypes>
+
+export const getUserAuthData = (): ThunkType => {
+    return async (dispatch) => {
         let data = await authAPI.me()
             if(data.resultCode === 0) {
                 let {id, email, login} = data.data;
@@ -98,8 +98,8 @@ export const getUserAuthData = () => {
     }
 }
 
-export const login = (email: string, password:string, rememberMe:boolean, captcha:string) => {
-    return async (dispatch: any) => {
+export const login = (email: string, password:string, rememberMe:boolean, captcha:string): ThunkType => {
+    return async (dispatch) => {
         let response = await authAPI.login(email, password, rememberMe, captcha)
         if(response.data.resultCode === 0) {
             //success, get auth data
@@ -110,13 +110,14 @@ export const login = (email: string, password:string, rememberMe:boolean, captch
                 dispatch(getCaptchaUrl())
             }
             let message = response.data.messages.length > 0 ? response.data.messages[0] : "Some error";
+            // @ts-ignore
             dispatch(stopSubmit('login',{_error: message})); //Общая ошибка
         }
     }
 }
 
-export const getCaptchaUrl = () => {
-    return async (dispatch: any) => {
+export const getCaptchaUrl = (): ThunkType => {
+    return async (dispatch) => {
         let response = await securityAPI.getCaptchaUrl()
 
         let captchaUrl = response.url
@@ -125,8 +126,8 @@ export const getCaptchaUrl = () => {
     }
 }
 
-export const logout = () => {
-    return async (dispatch: any) => {
+export const logout = ():ThunkType => {
+    return async (dispatch) => {
         let response = await authAPI.logout()
         if(response.data.resultCode === 0) {
             dispatch(setAuthUserData(null, null, null, false));
