@@ -14,7 +14,7 @@ type PropsType = {
     findJobAC: () => void
     noFindJobAC: () => void
     isOwner: boolean
-    savePhoto: (file:any) => void
+    savePhoto: (file: File) => void
     saveProfile: (profile:ProfileType) => Promise<any>
 }
 
@@ -30,9 +30,9 @@ const ProfileInfo: FC<PropsType> = ({profile, status, updateStatus, savePhoto, s
         return <Preloader />
     }
 
-    const onMainPhotoSelected = (e: any) => {
-        if(e.target.files.length) {
-            savePhoto(e.target.files[0])
+    const onMainPhotoSelected = (e: ChangeEvent<HTMLInputElement>) => {
+        if(e.currentTarget.files!.length) {
+            savePhoto(e.currentTarget.files![0])
         }
     }
 
