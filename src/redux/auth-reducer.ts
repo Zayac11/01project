@@ -1,29 +1,14 @@
 import aang from '../assets/images/Aang.jpg'
 import {ResultCodeForCaptchaEnum, ResultCodesEnum} from "../api/api";
-import {ThunkAction} from "redux-thunk";
-import {AppStateType} from "./redux-store";
+import {BaseThunkType, InferActionsTypes} from "./redux-store";
 import {authAPI} from "../api/auth-api";
 import {securityAPI} from "../api/security-api";
 import {profileAPI} from "../api/profile-api";
-import { stopSubmit } from 'redux-form';
-
-const SET_USER_DATA = 'SET_USER_DATA';
-const GET_CAPTCHA_URL_SUCCESS = 'GET_CAPTCHA_URL_SUCCESS';
-const SET_USER_AVATAR = 'SET_USER_AVATAR';
-// const TOGGLE_IS_FETCHING = 'TOGGLE_IS_FETCHING';
-
-export type InitialStateType2 = {
-    id: number | null //Число или null
-    email: string | null
-    login: string | null
-    isAuth: boolean
-    captchaUrl: string | null
-    userAvatar: typeof aang | null
-}
+import {FormAction, stopSubmit} from 'redux-form';
 
 export type InitialStateType = typeof initialState
-
 let initialState = {
+
     id: null as number | null,
     email: null as string | null,
     login: null as string | null,
@@ -32,70 +17,47 @@ let initialState = {
     userAvatar: aang as typeof aang | null,
 }
 
-
 //reducer возвращает стейт такого же значения, что и принимает, чтобы мы в кейсах не дописывали новые поля объекту
-const authReducer = (state = initialState, action: ActionsTypes):InitialStateType2  => {
+const authReducer = (state = initialState, action: ActionsType):InitialStateType  => {
     switch (action.type) {
-        case SET_USER_DATA:
+        case 'SN/AUTH/SET_USER_DATA':
             return {
                 ...state,
                 ...action.payload,
             }
-        case GET_CAPTCHA_URL_SUCCESS:
+        case 'SN/AUTH/GET_CAPTCHA_URL_SUCCESS':
             return {
                 ...state,
                 captchaUrl: action.captchaUrl
             }
 
-        case SET_USER_AVATAR:
+        case 'SN/AUTH/SET_USER_AVATAR':
             return  {...state, userAvatar: action.userAvatar }
-        // case TOGGLE_IS_FETCHING:
-        //     return  {...state, isFetching: action.isFetching }
+
         default:
             return state;
     }
 }
 
-type ActionsTypes = GetCaptchaUrlSuccessActionType | SetAuthUserDataActionType | SetUserAvatarActionType
+type ActionsType = InferActionsTypes<typeof actions>
 
-type SetAuthUserDataActionTypePayloadType = {
-    id: number | null
-    email: string | null
-    login: string | null
-    isAuth: boolean
+export const actions = {
+    setAuthUserData: (id: number | null, email: string | null, login:string | null, isAuth:boolean) => ({type: 'SN/AUTH/SET_USER_DATA', payload: {id, email, login, isAuth}} as const),
+    setUserAvatar: (userAvatar: string | null) => ({type: 'SN/AUTH/SET_USER_AVATAR', userAvatar} as const),
+    getCaptchaUrlSuccess: (captchaUrl: string) => ({type: 'SN/AUTH/GET_CAPTCHA_URL_SUCCESS', captchaUrl} as const),
 }
-type SetAuthUserDataActionType = {
-    type: typeof SET_USER_DATA
-    payload: SetAuthUserDataActionTypePayloadType
-}
-export const setAuthUserData = (id: number | null, email: string | null, login:string | null, isAuth:boolean):SetAuthUserDataActionType =>
-    ({type: SET_USER_DATA, payload: {id, email, login, isAuth}})
-type SetUserAvatarActionType = {
-    type: typeof SET_USER_AVATAR
-    userAvatar: string | null
-}
-export const setUserAvatar = (userAvatar: string | null): SetUserAvatarActionType =>
-    ({type: SET_USER_AVATAR, userAvatar})
-type GetCaptchaUrlSuccessActionType = {
-    type: typeof GET_CAPTCHA_URL_SUCCESS
-    captchaUrl: string
-}
-export const getCaptchaUrlSuccess = (captchaUrl: string):GetCaptchaUrlSuccessActionType =>
-    ({type: GET_CAPTCHA_URL_SUCCESS, captchaUrl})
-// export const toggleIsFetching = (isFetching) => ({type: TOGGLE_IS_FETCHING, isFetching })
 
-type ThunkType = ThunkAction<Promise<void>, AppStateType, unknown, ActionsTypes>
+type ThunkType = BaseThunkType<ActionsType | FormAction>
 
 export const getUserAuthData = (): ThunkType => {
     return async (dispatch) => {
         let data = await authAPI.me()
         if(data.resultCode === ResultCodesEnum.Success) {
             let {id, email, login} = data.data;
-            dispatch(setAuthUserData(id, email, login, true));
+            dispatch(actions.setAuthUserData(id, email, login, true));
 
             let response = await profileAPI.getProfile(id)
-            dispatch(setUserAvatar(response.photos.small));
-
+            dispatch(actions.setUserAvatar(response.photos.small));
         }
     }
 }
@@ -112,7 +74,6 @@ export const login = (email: string, password:string, rememberMe:boolean, captch
                 dispatch(getCaptchaUrl())
             }
             let message = data.messages.length > 0 ? data.messages[0] : "Some error"
-            // @ts-ignore
             dispatch(stopSubmit('login',{_error: message})) //Общая ошибка
         }
     }
@@ -124,7 +85,7 @@ export const getCaptchaUrl = (): ThunkType => {
 
         let captchaUrl = data.url
 
-        dispatch(getCaptchaUrlSuccess(captchaUrl))
+        dispatch(actions.getCaptchaUrlSuccess(captchaUrl))
     }
 }
 
@@ -132,7 +93,7 @@ export const logout = ():ThunkType => {
     return async (dispatch) => {
         let response = await authAPI.logout()
         if(response.data.resultCode === 0) {
-            dispatch(setAuthUserData(null, null, null, false));
+            dispatch(actions.setAuthUserData(null, null, null, false));
         }
     }
 }

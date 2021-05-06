@@ -1,7 +1,6 @@
-import {stopSubmit} from "redux-form";
+import {FormAction, stopSubmit} from "redux-form";
 import {PhotosType, PostType, ProfileType} from "../types/types";
-import {ThunkAction} from "redux-thunk";
-import {AppStateType, InferActionsTypes} from "./redux-store";
+import {BaseThunkType, InferActionsTypes} from "./redux-store";
 import {profileAPI} from "../api/profile-api";
 
 let initialState = {
@@ -16,10 +15,10 @@ let initialState = {
 };
 export type InitialStateType = typeof initialState
 
-const profileReducer = (state = initialState, action: ActionsTypes):InitialStateType => {
+const profileReducer = (state = initialState, action: ActionsType):InitialStateType => {
 
     switch (action.type) {
-        case 'ADD_POST': {
+        case 'SN/PROFILE/ADD_POST': {
             let newPost = {
                 id: 4,
                 text: action.newPostText,
@@ -31,32 +30,32 @@ const profileReducer = (state = initialState, action: ActionsTypes):InitialState
                 postsData: [...state.postsData, newPost],
             };
         }
-        case 'SET_USER_PROFILE': {
+        case 'SN/PROFILE/SET_USER_PROFILE': {
             return {
                 ...state,
                 profile: action.profile,
                 findJob: action.profile.lookingForAJob
             };
         }
-        case 'SET_FIND_JOB': {
+        case 'SN/PROFILE/SET_FIND_JOB': {
             return {
                 ...state,
                 findJob: true
             };
         }
-        case 'SET_NO_FIND_JOB': {
+        case 'SN/PROFILE/SET_NO_FIND_JOB': {
             return {
                 ...state,
                 findJob: false
             };
         }
-        case 'SET_STATUS': {
+        case 'SN/PROFILE/SET_STATUS': {
             return {
                 ...state,
                 status: action.status
             };
         }
-        case 'SAVE_PHOTO_SUCCESS': {
+        case 'SN/PROFILE/SAVE_PHOTO_SUCCESS': {
             return {
                 ...state,
                 profile: {...state.profile, photos: action.photos} as ProfileType
@@ -71,20 +70,20 @@ const profileReducer = (state = initialState, action: ActionsTypes):InitialState
 //Нам нельзя изменять пришедший к нам изначально state, если мы перепишем и изменим его, то connect будет сравнивать
 }
 
-type ActionsTypes = InferActionsTypes<typeof actions>
+type ActionsType = InferActionsTypes<typeof actions>
 
 export const actions = {
-    addPostActionCreator: (newPostText:string) => ({type: 'ADD_POST', newPostText} as const),
-    setUserProfile: (profile:ProfileType) => ({type: 'SET_USER_PROFILE', profile} as const),
-    setStatus: (status: string) => ({type: 'SET_STATUS', status} as const),
-    findJobAC: () => ({type: 'SET_FIND_JOB'} as const),
-    noFindJobAC: () => ({type: 'SET_NO_FIND_JOB'} as const),
-    savePhotoSuccess: (photos: PhotosType) => ({type: 'SAVE_PHOTO_SUCCESS', photos} as const),
+    addPostActionCreator: (newPostText:string) => ({type: 'SN/PROFILE/ADD_POST', newPostText} as const),
+    setUserProfile: (profile:ProfileType) => ({type: 'SN/PROFILE/SET_USER_PROFILE', profile} as const),
+    setStatus: (status: string) => ({type: 'SN/PROFILE/SET_STATUS', status} as const),
+    findJobAC: () => ({type: 'SN/PROFILE/SET_FIND_JOB'} as const),
+    noFindJobAC: () => ({type: 'SN/PROFILE/SET_NO_FIND_JOB'} as const),
+    savePhotoSuccess: (photos: PhotosType) => ({type: 'SN/PROFILE/SAVE_PHOTO_SUCCESS', photos} as const),
 }
 
-type ThunkType = ThunkAction<Promise<void>, AppStateType, unknown, ActionsTypes>
+type ThunkType = BaseThunkType<ActionsType | FormAction>
 
-export const getUserProfile = (userId: number | null): ThunkType => {
+export const getUserProfile = (userId: number): ThunkType => {
     return async (dispatch) => {
         let data = await profileAPI.getProfile(userId)
         dispatch(actions.setUserProfile(data));
@@ -124,7 +123,12 @@ export const saveProfile = (profile:ProfileType): ThunkType => {
         let userId = getState().auth.id
         let data = await profileAPI.saveProfile(profile)
         if(data.resultCode === 0) {
-            dispatch(getUserProfile(userId))
+            if(userId != null) {
+                dispatch(getUserProfile(userId))
+            }
+            else {
+                throw new Error(`User id can't be null`)
+            }
         }
         else {
             dispatch(stopSubmit('edit-profile',{_error: data.messages[0]})); //Общая ошибка

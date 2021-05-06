@@ -1,21 +1,16 @@
 import {getUserAuthData} from "./auth-reducer";
 import {ThunkAction} from "redux-thunk";
-import {AppStateType} from "./redux-store";
-import {Dispatch} from "redux";
+import {AppStateType, InferActionsTypes} from "./redux-store";
 
-const INITIALIZED_SUCCESS = 'INITIALIZED_SUCCESS';
-
-export type InitialStateType = {
-    initialized: boolean
-}
-
-let initialState: InitialStateType = {
+let initialState = {
     initialized: false,
 }
 
-const appReducer = (state = initialState, action: InitializedSuccessActionType): InitialStateType => {
+export type InitialStateType = typeof initialState
+
+const appReducer = (state = initialState, action: ActionsType): InitialStateType => {
     switch (action.type) {
-        case INITIALIZED_SUCCESS:
+        case 'SN/APP/INITIALIZED_SUCCESS':
             return {
                 ...state,
                 initialized: true,
@@ -25,17 +20,14 @@ const appReducer = (state = initialState, action: InitializedSuccessActionType):
     }
 }
 
-type ActionsTypes = InitializedSuccessActionType
+type ActionsType = InferActionsTypes<typeof actions>
 
-type InitializedSuccessActionType = {
-    type: typeof INITIALIZED_SUCCESS
+export const actions = {
+    //Двоеточие после скобок говорит о том, что функция возвращает тип InitializedSuccessActionType
+    initializedSuccess: () => ({type: 'SN/APP/INITIALIZED_SUCCESS'} as const)
 }
 
-//Двоеточие после скобок говорит о том, что функция возвращает тип InitializedSuccessActionType
-export const initializedSuccess = (): InitializedSuccessActionType => ({type: INITIALIZED_SUCCESS})
-
-type ThunkType = ThunkAction<void, AppStateType, unknown, ActionsTypes>
-type DispatchType = Dispatch<ActionsTypes>
+type ThunkType = ThunkAction<void, AppStateType, unknown, ActionsType>
 
 export const initializeApp = (): ThunkType => {
     return (dispatch) => {
@@ -43,7 +35,7 @@ export const initializeApp = (): ThunkType => {
         let promise = dispatch(getUserAuthData());
         Promise.all([promise])
             .then(() => {
-                dispatch(initializedSuccess())
+                dispatch(actions.initializedSuccess())
         });
     }
 }
