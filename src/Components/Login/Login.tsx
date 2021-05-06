@@ -16,15 +16,15 @@ const LoginForm: FC<InjectedFormProps<LoginFormValuesType, LoginFormOwnProps> & 
 
     return (
         <form onSubmit={handleSubmit}>
-            {createField("Email", "email",[required], Input)}
-            {createField("Password", "password",[required], Input, { type: 'password'})}
-            {createField(undefined, "rememberMe",[], Input, { type: 'checkbox'}, "Remember me")}
+            {createField<LoginFormValuesTypeKeys>("Email", "email",[required], Input)}
+            {createField<LoginFormValuesTypeKeys>("Password", "password",[required], Input, { type: 'password'})}
+            {createField<LoginFormValuesTypeKeys>(undefined, "rememberMe",[], Input, { type: 'checkbox'}, "Remember me")}
 
             {
                 captchaUrl && <img src={captchaUrl} alt="captcha"/>
             }
             {
-                captchaUrl && createField("Symbols from image", "captcha", [required], Input, {})
+                captchaUrl && createField<LoginFormValuesTypeKeys>("Symbols from image", "captcha", [required], Input, {})
             }
 
             {
@@ -57,6 +57,9 @@ type LoginFormValuesType = {
     rememberMe: boolean
     captcha: string
 }
+
+type LoginFormValuesTypeKeys = Extract<keyof LoginFormValuesType, string>
+
 
 const Login: FC<MapStatePropsType & MapDispatchPropsType> = (props) => {
     const onSubmit = (formData: LoginFormValuesType) => {
