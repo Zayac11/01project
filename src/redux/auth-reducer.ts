@@ -1,8 +1,11 @@
 import aang from '../assets/images/Aang.jpg'
-import {authAPI, ResultCodeForCaptcha, ResultCodesEnum, securityAPI, usersAPI} from "../api/api";
-import {stopSubmit} from "redux-form";
+import {ResultCodeForCaptchaEnum, ResultCodesEnum} from "../api/api";
 import {ThunkAction} from "redux-thunk";
 import {AppStateType} from "./redux-store";
+import {authAPI} from "../api/auth-api";
+import {securityAPI} from "../api/security-api";
+import {profileAPI} from "../api/profile-api";
+import { stopSubmit } from 'redux-form';
 
 const SET_USER_DATA = 'SET_USER_DATA';
 const GET_CAPTCHA_URL_SUCCESS = 'GET_CAPTCHA_URL_SUCCESS';
@@ -86,31 +89,31 @@ type ThunkType = ThunkAction<Promise<void>, AppStateType, unknown, ActionsTypes>
 export const getUserAuthData = (): ThunkType => {
     return async (dispatch) => {
         let data = await authAPI.me()
-            if(data.resultCode === ResultCodesEnum.Success) {
-                let {id, email, login} = data.data;
-                dispatch(setAuthUserData(id, email, login, true));
+        if(data.resultCode === ResultCodesEnum.Success) {
+            let {id, email, login} = data.data;
+            dispatch(setAuthUserData(id, email, login, true));
 
-                let response = await usersAPI.getProfile(id)
-                dispatch(setUserAvatar(response.photos.small));
+            let response = await profileAPI.getProfile(id)
+            dispatch(setUserAvatar(response.photos.small));
 
-            }
+        }
     }
 }
 
 export const login = (email: string, password:string, rememberMe:boolean, captcha:string): ThunkType => {
     return async (dispatch) => {
-        let response = await authAPI.login(email, password, rememberMe, captcha)
-        if(response.data.resultCode === ResultCodesEnum.Success) {
+        let data = await authAPI.login(email, password, rememberMe, captcha)
+        if(data.resultCode === ResultCodesEnum.Success) {
             //success, get auth data
             dispatch(getUserAuthData()) //проверить еще раз после логина
         }
         else {
-            if(response.data.resultCode === ResultCodeForCaptcha.CaptchaIsRequired) {
+            if(data.resultCode === ResultCodeForCaptchaEnum.CaptchaIsRequired) {
                 dispatch(getCaptchaUrl())
             }
-            let message = response.data.messages.length > 0 ? response.data.messages[0] : "Some error";
+            let message = data.messages.length > 0 ? data.messages[0] : "Some error"
             // @ts-ignore
-            dispatch(stopSubmit('login',{_error: message})); //Общая ошибка
+            dispatch(stopSubmit('login',{_error: message})) //Общая ошибка
         }
     }
 }

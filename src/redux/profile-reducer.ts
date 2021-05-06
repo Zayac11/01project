@@ -1,15 +1,8 @@
-import {profileAPI, usersAPI} from "../api/api";
 import {stopSubmit} from "redux-form";
 import {PhotosType, PostType, ProfileType} from "../types/types";
 import {ThunkAction} from "redux-thunk";
-import {AppStateType} from "./redux-store";
-
-const ADD_POST = 'ADD-POST';
-const SET_USER_PROFILE = 'SET_USER_PROFILE';
-const SET_FIND_JOB = 'SET_FIND_JOB'
-const SET_NO_FIND_JOB = 'SET_NO_FIND_JOB'
-const SET_STATUS = 'SET_STATUS'
-const SAVE_PHOTO_SUCCESS = 'SAVE_PHOTO_SUCCESS'
+import {AppStateType, InferActionsTypes} from "./redux-store";
+import {profileAPI} from "../api/profile-api";
 
 let initialState = {
     postsData:[
@@ -26,7 +19,7 @@ export type InitialStateType = typeof initialState
 const profileReducer = (state = initialState, action: ActionsTypes):InitialStateType => {
 
     switch (action.type) {
-        case ADD_POST: {
+        case 'ADD_POST': {
             let newPost = {
                 id: 4,
                 text: action.newPostText,
@@ -38,32 +31,32 @@ const profileReducer = (state = initialState, action: ActionsTypes):InitialState
                 postsData: [...state.postsData, newPost],
             };
         }
-        case SET_USER_PROFILE: {
+        case 'SET_USER_PROFILE': {
             return {
                 ...state,
                 profile: action.profile,
                 findJob: action.profile.lookingForAJob
             };
         }
-        case SET_FIND_JOB: {
+        case 'SET_FIND_JOB': {
             return {
                 ...state,
                 findJob: true
             };
         }
-        case SET_NO_FIND_JOB: {
+        case 'SET_NO_FIND_JOB': {
             return {
                 ...state,
                 findJob: false
             };
         }
-        case SET_STATUS: {
+        case 'SET_STATUS': {
             return {
                 ...state,
                 status: action.status
             };
         }
-        case SAVE_PHOTO_SUCCESS: {
+        case 'SAVE_PHOTO_SUCCESS': {
             return {
                 ...state,
                 profile: {...state.profile, photos: action.photos} as ProfileType
@@ -78,56 +71,30 @@ const profileReducer = (state = initialState, action: ActionsTypes):InitialState
 //Нам нельзя изменять пришедший к нам изначально state, если мы перепишем и изменим его, то connect будет сравнивать
 }
 
-type ActionsTypes = AddPostActionCreatorActionType | SetUserProfileActionType | SetStatusActionType | FindJobACActionType | NoFindJobACActionType | SavePhotoSuccessActionType
+type ActionsTypes = InferActionsTypes<typeof actions>
 
-type AddPostActionCreatorActionType = {
-    type: typeof ADD_POST
-    newPostText: string
+export const actions = {
+    addPostActionCreator: (newPostText:string) => ({type: 'ADD_POST', newPostText} as const),
+    setUserProfile: (profile:ProfileType) => ({type: 'SET_USER_PROFILE', profile} as const),
+    setStatus: (status: string) => ({type: 'SET_STATUS', status} as const),
+    findJobAC: () => ({type: 'SET_FIND_JOB'} as const),
+    noFindJobAC: () => ({type: 'SET_NO_FIND_JOB'} as const),
+    savePhotoSuccess: (photos: PhotosType) => ({type: 'SAVE_PHOTO_SUCCESS', photos} as const),
 }
-export const addPostActionCreator = (newPostText:string): AddPostActionCreatorActionType =>
-    ({type: ADD_POST, newPostText})
-type SetUserProfileActionType = {
-    type: typeof SET_USER_PROFILE
-    profile: ProfileType
-}
-export const setUserProfile = (profile:ProfileType):SetUserProfileActionType =>
-    ({type: SET_USER_PROFILE, profile})
-type SetStatusActionType = {
-    type: typeof SET_STATUS
-    status: string
-}
-export const setStatus = (status: string):SetStatusActionType =>
-    ({type: SET_STATUS, status})
-type FindJobACActionType = {
-    type: typeof SET_FIND_JOB
-}
-export const findJobAC = ():FindJobACActionType =>
-    ({type: SET_FIND_JOB})
-type NoFindJobACActionType = {
-    type: typeof SET_NO_FIND_JOB
-}
-export const noFindJobAC = ():NoFindJobACActionType =>
-    ({type: SET_NO_FIND_JOB})
-type SavePhotoSuccessActionType = {
-    type: typeof SAVE_PHOTO_SUCCESS
-    photos: PhotosType
-}
-export const savePhotoSuccess = (photos: PhotosType):SavePhotoSuccessActionType =>
-    ({type: SAVE_PHOTO_SUCCESS, photos})
 
 type ThunkType = ThunkAction<Promise<void>, AppStateType, unknown, ActionsTypes>
 
 export const getUserProfile = (userId: number | null): ThunkType => {
     return async (dispatch) => {
-        let data = await usersAPI.getProfile(userId)
-        dispatch(setUserProfile(data));
+        let data = await profileAPI.getProfile(userId)
+        dispatch(actions.setUserProfile(data));
     }
 }
 
 export const getStatus = (userId:number): ThunkType => {
     return async(dispatch) => {
         let data = await profileAPI.getStatus(userId)
-        dispatch(setStatus(data))
+        dispatch(actions.setStatus(data))
     }
 }
 export const updateStatus = (status:string): ThunkType => {
@@ -135,7 +102,7 @@ export const updateStatus = (status:string): ThunkType => {
         try{
             let response = await profileAPI.updateStatus(status)
             if(response.data.resultCode === 0) {
-                dispatch(setStatus(status))
+                dispatch(actions.setStatus(status))
             }
         }
         catch(error) {
@@ -148,7 +115,7 @@ export const savePhoto = (file: File): ThunkType => {
         let data = await profileAPI.savePhoto(file)
 
         if(data.resultCode === 0) {
-            dispatch(savePhotoSuccess(data.data))
+            dispatch(actions.savePhotoSuccess(data.data.photos))
         }
     }
 }
