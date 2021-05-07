@@ -4,26 +4,19 @@ import Dialogs from "./Dialogs";
 import {connect} from "react-redux";
 import {withAuthRedirect} from "../../hoc/WithAuthRedirect";
 import {compose} from "redux";
+import { AppStateType } from '../../redux/redux-store';
 
 //Возвращает объект с данными из state и засовываем их в пропсы
-let mapStateToProps = (state) => {
+let mapStateToProps = (state: AppStateType) => {
     return {
         dialogsData: state.dialogsPage.dialogsData,
         messagesData: state.dialogsPage.messagesData,
-        newMessageText: state.dialogsPage.newMessageText,
     }
 }
 //Возвращает
-let mapDispatchToProps = (dispatch) => {
-    return {
-        addMessage: (newMessageBody) => {
-            dispatch(actions.addMessageActionCreator(newMessageBody));
-        },
-    }
-}
 
 const DialogsContainer = compose(
-    connect(mapStateToProps, mapDispatchToProps),
+    connect(mapStateToProps, {sendMessage: actions.sendMessage}),
     withAuthRedirect
 )(Dialogs)
 
