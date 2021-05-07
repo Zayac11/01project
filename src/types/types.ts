@@ -1,7 +1,7 @@
 export type PostType = {
     id: number
     text: string
-    likeCount: string
+    likeCount: number
 }
 export type PhotosType = {
     small: string | null

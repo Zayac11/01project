@@ -3,11 +3,11 @@ import s from './ProfileInfo.module.css'
 import Preloader from "../../Common/Preloader/Preloader";
 import ProfileStatusWithHooks from "./ProfileStatusWithHooks";
 import userPhoto from '../../../assets/images/Aang.jpg';
-import ProfileDataFormReduxForm from "./ProfileDataForm";
-import {ProfileType} from "../../../types/types";
+import {ContactsType, ProfileType} from "../../../types/types";
+import ProfileDataForm from './ProfileDataForm';
 
 type PropsType = {
-    profile: ProfileType
+    profile: ProfileType | null
     status: string
     updateStatus: (status:string) => void
     findJob: boolean
@@ -21,27 +21,23 @@ type PropsType = {
 const ProfileInfo: FC<PropsType> = ({profile, status, updateStatus, savePhoto, saveProfile, ...props}) => {
 
     let [editMode, setEditMode] = useState(false); //возвращает массив
-    // useEffect( () => {
-    //     setStatus(props.status);
-    // },[props.status] ); //когда props.status придет новый, хук засетает новый статус
-
 
     if(!profile) {
         return <Preloader />
     }
 
     const onMainPhotoSelected = (e: ChangeEvent<HTMLInputElement>) => {
-        if(e.currentTarget.files!.length) {
-            savePhoto(e.currentTarget.files![0])
+        if(e.currentTarget.files?.length) {
+            savePhoto(e.currentTarget.files[0])
         }
     }
 
     const onSubmit = (formData: ProfileType) => {
+        // todo: remove then
         saveProfile(formData)
             .then(() => {
                 setEditMode(false)
             })
-        // console.log(formData)
     }
 
 
@@ -53,23 +49,11 @@ const ProfileInfo: FC<PropsType> = ({profile, status, updateStatus, savePhoto, s
 }
 
                 { editMode
-                    // @ts-ignore
-                    ? <ProfileDataFormReduxForm initialValues={profile} profile={profile} onSubmit={onSubmit} />
+                    ? <ProfileDataForm initialValues={profile} profile={profile} onSubmit={onSubmit} />
                     : <ProfileData profile={profile} isOwner={props.isOwner} goToEditMode={() => {setEditMode(true)}}/> }
 
                 <ProfileStatusWithHooks status={status} updateStatus={updateStatus}/>
             </div>
-
-            {/*<div className={s.findJob}>*/}
-            {/*    <img src={props.findJob ? findJob : noFindJob}/>*/}
-            {/*    {props.findJob ? <button onClick={() => {*/}
-            {/*        props.noFindJobAC()*/}
-            {/*    }}>Больше не ищу</button> : <button onClick={() => {*/}
-            {/*        props.findJobAC()*/}
-            {/*    }}>Найти работу</button>*/}
-            {/*    }*/}
-            {/*</div>*/}
-
         </div>
     );
 }
@@ -97,9 +81,8 @@ const ProfileData: FC<ProfileDataPropsType> = ({profile, isOwner, goToEditMode})
                 <b>About me</b>: {profile.aboutMe}
             </div>
             <div>
-                <b>Contacts</b>: {Object.keys(profile.contacts).map(key => {
-            // @ts-ignore
-                return <Contact key={key} contactTitle={key} contactValue={profile.contacts[key]}/>
+                <b>Contacts</b>: {Object.keys(profile.contacts).map((key) => {
+                return <Contact key={key} contactTitle={key} contactValue={profile.contacts[key as keyof ContactsType]}/>
             })}
             </div>
         </div>

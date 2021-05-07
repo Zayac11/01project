@@ -1,7 +1,7 @@
 import React, {FC} from 'react';
 import s from '../Common/FormsControls/FormsControls.module.css'
 import {InjectedFormProps, reduxForm} from "redux-form";
-import {createField, Input} from "../Common/FormsControls/FormsControls";
+import {createField, GetStringCase, Input} from "../Common/FormsControls/FormsControls";
 import {required} from "../../utils/validators/validators";
 import {connect} from "react-redux";
 import {login} from "../../redux/auth-reducer";
@@ -58,7 +58,7 @@ type LoginFormValuesType = {
     captcha: string
 }
 
-type LoginFormValuesTypeKeys = Extract<keyof LoginFormValuesType, string>
+type LoginFormValuesTypeKeys = GetStringCase<LoginFormValuesType>
 
 
 const Login: FC<MapStatePropsType & MapDispatchPropsType> = (props) => {

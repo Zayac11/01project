@@ -4,7 +4,7 @@ import MyPostsContainer from "./MyPosts/MyPostsContainer";
 import {ProfileType} from "../../types/types";
 
 type PropsType = {
-    profile: ProfileType
+    profile: ProfileType | null
     status: string
     updateStatus: (status:string) => void
     findJob: boolean

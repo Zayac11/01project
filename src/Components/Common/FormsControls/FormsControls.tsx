@@ -2,6 +2,7 @@ import React, {Component, FC, ReactNode} from 'react';
 import s from './FormsControls.module.css'
 import {Field, WrappedFieldMetaProps, WrappedFieldProps} from "redux-form";
 import {FieldValidatorType} from "../../../utils/validators/validators";
+import {AddPostFormValuesType} from "../../Profile/MyPosts/AddNewPostForm/AddNewPostForm";
 
 // export const Elements = ({input, meta, ...props}) => {
 //     const hasError = meta.touched && meta.error;
@@ -56,5 +57,6 @@ export function createField<FormKeysType extends string>(placeholder: string | u
                    {...props}
             /> {text}
         </div>
-
 }
+
+export type GetStringCase<T> = Extract<keyof T, string>

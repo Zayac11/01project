@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {ComponentType} from 'react';
 import {actions} from "../../redux/dialogs-reducer";
 import Dialogs from "./Dialogs";
 import {connect} from "react-redux";
@@ -15,7 +15,7 @@ let mapStateToProps = (state: AppStateType) => {
 }
 //Возвращает
 
-const DialogsContainer = compose(
+const DialogsContainer = compose<ComponentType>(
     connect(mapStateToProps, {sendMessage: actions.sendMessage}),
     withAuthRedirect
 )(Dialogs)

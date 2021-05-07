@@ -7,31 +7,56 @@ import {
     savePhoto,
     saveProfile,
     updateStatus,
+    actions
 } from "../../redux/profile-reducer";
-import {withRouter} from "react-router-dom";
-// import {withAuthRedirect} from "../../hoc/WithAuthRedirect";
+import {RouteComponentProps, withRouter} from "react-router-dom";
 import {compose} from "redux";
+import {AppStateType} from "../../redux/redux-store";
+import {ProfileType} from "../../types/types";
 
-class ProfileContainer extends React.Component {
+type MapPropsType = ReturnType<typeof mapStateToProps>
+type DispatchPropsType = {
+    getStatus: (userId: number) => void
+    getUserProfile: (userId: number) => void
+    savePhoto: (file: File) => void
+    updateStatus: (text: string) => void
+    saveProfile: (profile: ProfileType) => Promise<any>
+}
+
+type PathParamsType = {
+    userId: string
+}
+
+type PropsType = MapPropsType & DispatchPropsType & RouteComponentProps<PathParamsType>;
+
+//todo: hoc props
+//Injection of HOC props
+class ProfileContainer extends React.Component<PropsType> {
 
     refreshProfile() {
-        let userId = this.props.match.params.userId;
+        let userId: number | null = +this.props.match.params.userId;
         if (!userId) {
             userId = this.props.id;
             if(!userId) {
                 this.props.history.push("/login"); //Редирект
             }
         }
-        this.props.getUserProfile(userId);
-        this.props.getStatus(userId);
+
+        if(!userId) {
+            console.error ('Id should exists in URI params or in state')
+        }
+        else {
+            this.props.getUserProfile(userId);
+            this.props.getStatus(userId);
+        }
     }
 
     componentDidMount() {
         this.refreshProfile();
     }
 
-    componentDidUpdate(prevProps, prevState, snapshot) {
-        if(this.props.match.params.userId != prevProps.match.params.id) {
+    componentDidUpdate(prevProps: PropsType, prevState: PropsType,) {
+        if(this.props.match.params.userId !== prevProps.match.params.userId) {
             this.refreshProfile();
         }
     }
@@ -41,9 +66,12 @@ class ProfileContainer extends React.Component {
             <div>
                 <Profile {...this.props}
                          isOwner={!this.props.match.params.userId}
-                         saveProfile={this.props.saveProfile}
+                         profile={this.props.profile}
+                         status={this.props.status}
                          updateStatus={this.props.updateStatus}
                          savePhoto={this.props.savePhoto}
+                         findJobAC={actions.findJobAC}
+                         noFindJobAC={actions.noFindJobAC}
                 />
             </div>
         );
@@ -51,7 +79,7 @@ class ProfileContainer extends React.Component {
 }
 // let AuthRedirectComponent = withAuthRedirect(ProfileContainer);
 
-let mapStateToProps = (state) => {
+let mapStateToProps = (state: AppStateType) => {
     return {
         profile: state.profilePage.profile,
         findJob: state.profilePage.findJob,
@@ -61,7 +89,7 @@ let mapStateToProps = (state) => {
     };
 }
 
-export default compose(
+export default compose<React.ComponentType>(
     connect(mapStateToProps, {getUserProfile, getStatus, updateStatus, savePhoto, saveProfile}),
     withRouter,
     // withAuthRedirect

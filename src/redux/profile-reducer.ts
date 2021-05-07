@@ -5,9 +5,9 @@ import {profileAPI} from "../api/profile-api";
 
 let initialState = {
     postsData:[
-        {id: 1, text: 'post 1', likeCount: '15'},
-        {id: 2, text: 'post 2', likeCount: '20'},
-        {id: 3, text: 'post 3', likeCount: '25'}
+        {id: 1, text: 'post 1', likeCount: 15},
+        {id: 2, text: 'post 2', likeCount: 20},
+        {id: 3, text: 'post 3', likeCount: 25}
     ] as Array<PostType>,
     profile: null as ProfileType | null,
     findJob: false,
@@ -22,7 +22,7 @@ const profileReducer = (state = initialState, action: ActionsType):InitialStateT
             let newPost = {
                 id: 4,
                 text: action.newPostText,
-                likeCount: '0'
+                likeCount: 0
             };
             //Делаем копию state
             return {
