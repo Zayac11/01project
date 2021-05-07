@@ -2,7 +2,7 @@ import React, {FC} from 'react';
 import s from './../Dialogs.module.css';
 
 type PropsType = {
-    message: number
+    message: string
 }
 
 let Message: FC<PropsType> = (props) => {
