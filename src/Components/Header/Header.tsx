@@ -1,10 +1,17 @@
-import React from 'react';
+import React, {FC} from 'react';
 import vk_img from "../../vk.png";
 import defaultAvatar from '../../assets/images/Aang.jpg'
 import s from './Header.module.css'
 import {NavLink} from "react-router-dom";
 
-const Header = (props) => {
+type PropsType = {
+    userAvatar: string | null
+    logout: () => void
+    isAuth: boolean | null
+    login: string | null
+}
+
+const Header: FC<PropsType> = (props) => {
     return (
         <header className={s.header}>
             <img src={vk_img} alt="logo"/>

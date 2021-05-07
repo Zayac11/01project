@@ -77,7 +77,6 @@ class ProfileContainer extends React.Component<PropsType> {
         );
     }
 }
-// let AuthRedirectComponent = withAuthRedirect(ProfileContainer);
 
 let mapStateToProps = (state: AppStateType) => {
     return {
@@ -94,8 +93,3 @@ export default compose<React.ComponentType>(
     withRouter,
     // withAuthRedirect
 )(ProfileContainer)
-
-//withRouter закидывает в компоненту данные url, connect закидывает в компоненту state и dispatch
-// let WithUrlDataContainerComponent = withRouter(AuthRedirectComponent);
-//
-// export default connect(mapStateToProps, {findJobAC, noFindJobAC, getUserProfile})(WithUrlDataContainerComponent);

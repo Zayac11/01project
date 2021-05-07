@@ -1,4 +1,4 @@
-type SidebarPageType = {
+export type SidebarPageType = {
     id: string,
     name: string
 }

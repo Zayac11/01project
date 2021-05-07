@@ -1,8 +1,13 @@
-import React from 'react';
+import React, {FC} from 'react';
 import s from './../Dialogs.module.css'
 import {NavLink} from "react-router-dom";
 
-let DialogItem = (props) => {
+type PropsType = {
+    id: number
+    name: string
+}
+
+let DialogItem: FC<PropsType> = (props) => {
     return (
         <div className={s.dialog}>
             <img src="https://vignette.wikia.nocookie.net/avatar/images/f/f4/3%D1%8521_%D0%90%D0%B0%D0%BD%D0%B3.jpg/revision/latest?cb=20110327121409&amp;path-prefix=ru" alt="avatar"/>
