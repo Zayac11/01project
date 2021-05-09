@@ -49,7 +49,6 @@ class UsersContainer extends React.Component<PropsType> {
     }
 
     render() {
-        console.log('a')
         return (
             <>
                 { this.props.isFetching ? <Preloader /> : null } {/*svg картинка загрузки*/}

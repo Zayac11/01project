@@ -2,6 +2,8 @@ import {UserType} from "../types/types";
 import {BaseThunkType, InferActionsTypes} from "./redux-store";
 import {Dispatch} from "redux";
 import {usersAPI} from "../api/users-api";
+import {updateObjectInArray} from "../utils/object-helpers";
+import {APIResponseType} from "../api/api";
 
 let initialState = {
     users: [] as Array<UserType>,
@@ -17,22 +19,27 @@ export type InitialStateType = typeof initialState
 const usersReducer = (state = initialState, action: ActionsType):InitialStateType => {
     switch (action.type) {
         case 'SN/USERS/FOLLOW':
-            return {...state,
-                users: state.users.map(u => {
-                    if(u.id === action.userId) {
-                        return {...u, followed: true} //копируем одного пользователя, followed которого надо изменить и меняем его
-                    }
-                    return u;
-                } ) ,}
+            return {
+                ...state,
+                // users: state.users.map(u => {
+                //     if(u.id === action.userId) {
+                //         return {...u, followed: true} //копируем одного пользователя, followed которого надо изменить и меняем его
+                //     }
+                //     return u;
+                // } ),
+                users: updateObjectInArray(state.users, action.userId, "id", {followed: true})
+            }
         case 'SN/USERS/UNFOLLOW':
-            return {...state,
-                // users: [...state.users],
-                users: state.users.map(u => {
-                    if(u.id === action.userId) {
-                        return{...u, followed: false} //копируем одного пользователя, followed которого надо изменить и меняем его
-                    }
-                    return u;
-                } ) ,}
+            return {
+                ...state,
+                // users: state.users.map(u => {
+                //     if(u.id === action.userId) {
+                //         return{...u, followed: false} //копируем одного пользователя, followed которого надо изменить и меняем его
+                //     }
+                //     return u;
+                // } ) ,
+                users: updateObjectInArray(state.users, action.userId, "id", {followed: false})
+            }
         case 'SN/USERS/SET_USERS':
             return { ...state, users: [ ...action.users ] }
         case 'SN/USERS/SET_CURRENT_PAGE':
@@ -78,7 +85,7 @@ export const requestUsers = (page:number, pageSize:number): ThunkType => {
 }
 
 const _followUnfollowFlow = async (dispatch: Dispatch<ActionsType>, userId: number,
-                             apiMethod: any, actionCreator: (userId: number) => ActionsType) => {
+                             apiMethod: (userId:number) => Promise<APIResponseType>, actionCreator: (userId: number) => ActionsType) => {
     dispatch(actions.toggleFollowingProgress(true,userId))
     let data = await apiMethod(userId)
     if (data.resultCode === 0) {
@@ -89,13 +96,13 @@ const _followUnfollowFlow = async (dispatch: Dispatch<ActionsType>, userId: numb
 
 export const follow = (userId:number): ThunkType => {
     return async (dispatch) => {
-        _followUnfollowFlow(dispatch, userId, usersAPI.follow.bind(usersAPI), actions.followSuccess)
+        await _followUnfollowFlow(dispatch, userId, usersAPI.follow.bind(usersAPI), actions.followSuccess)
     }
 }
 
 export const unfollow = (userId:number): ThunkType => {
     return async (dispatch) => {
-        _followUnfollowFlow(dispatch, userId, usersAPI.unfollow.bind(usersAPI), actions.unfollowSuccess)
+       await _followUnfollowFlow(dispatch, userId, usersAPI.unfollow.bind(usersAPI), actions.unfollowSuccess)
     }
 }
 
