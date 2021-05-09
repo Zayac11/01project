@@ -8,8 +8,8 @@ type GetUsersResponseType = {
 }
 
 export const usersAPI = {
-    getUsers(currentPage = 1, pageSize = 10) {
-        return instance.get<GetUsersResponseType>(`users?page=${currentPage}&count=${pageSize}`)
+    getUsers(currentPage = 1, pageSize = 10, term = '', friend: null | boolean = null) {
+        return instance.get<GetUsersResponseType>(`users?page=${currentPage}&count=${pageSize}&term=${term}` + (friend === null ? '' : `&friend=${friend}`) )
             .then(response => response.data) //в контейнерной компоненте response станет data (датой)
     },
 
