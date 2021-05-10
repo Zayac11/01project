@@ -2,9 +2,9 @@ import React from 'react';
 import './App.css';
 import {withRouter, Route, BrowserRouter, Redirect} from "react-router-dom";
 import NavbarContainer from './Components/Navbar/NavbarContainer';
-import UsersContainer from './Components/Users/UsersContainer';
+import UsersPage from './Components/Users/UsersContainer';
 import HeaderContainer from "./Components/Header/HeaderContainer";
-import LoginPage from "./Components/Login/Login";
+import {LoginPage} from './Components/Login/LoginPage'
 import {connect, Provider} from "react-redux";
 import {initializeApp} from "./redux/app-reducer";
 import {compose} from "redux";
@@ -49,7 +49,7 @@ class App extends React.Component<MapPropsType & DispatchPropsType> {
 
                     <Route path='/dialogs' render={ () => <SuspendedDialogs /> }/>
                     <Route path='/profile/:userId?' render={ () => <SuspendedProfile/> }/>
-                    <Route path='/users' render={ () => <UsersContainer pageTitle={'Samurai'} /> } />
+                    <Route path='/users' render={ () => <UsersPage pageTitle={'Samurai'} /> } />
                     <Route path='/login' render={ () => <LoginPage /> } />
                     <Route exact path='/' render={ () => <Redirect to={"/profile"}/>}/>
 
