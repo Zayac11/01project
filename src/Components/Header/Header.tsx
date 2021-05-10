@@ -1,31 +1,55 @@
-import React, {FC} from 'react';
-import vk_img from "../../vk.png";
+import React, {FC} from 'react'
 import defaultAvatar from '../../assets/images/Aang.jpg'
 import s from './Header.module.css'
-import {NavLink} from "react-router-dom";
+import {Link} from 'react-router-dom'
+import {Avatar, Button, Col, Layout, Menu, Row} from 'antd'
+import {useDispatch, useSelector} from 'react-redux'
+import {logout} from '../../redux/auth-reducer'
+import {selectCurrentUserAvatar, selectCurrentUserLogin, selectIsAuth} from '../../redux/auth-selectors'
 
-type PropsType = {
-    userAvatar: string | null
-    logout: () => void
-    isAuth: boolean | null
-    login: string | null
-}
+type PropsType = {}
 
-const Header: FC<PropsType> = (props) => {
+const {Header} = Layout
+
+const AppHeader: FC<PropsType> = (props) => {
+
+    const isAuth = useSelector(selectIsAuth)
+    const login = useSelector(selectCurrentUserLogin)
+    const userAvatar = useSelector(selectCurrentUserAvatar)
+
+    const dispatch = useDispatch()
+
     return (
-        <header className={s.header}>
-            <img src={vk_img} alt="logo"/>
 
-            <div className={s.loginBlock}>
-                <img src={props.userAvatar != null ? props.userAvatar : defaultAvatar} alt=""/>
-
-                {props.isAuth
-                    ? <div> {props.login} - <button onClick={props.logout}>logout</button> </div>
-                    : <NavLink to={'/login'}>Login</NavLink>
+        <Header className = 'header'>
+            <Row>
+                <Col span = {18}>
+                    <Menu theme = 'dark' mode = 'horizontal' defaultSelectedKeys = {['2']}>
+                        <Menu.Item key = '1'><Link to = '/developers'>Developers</Link></Menu.Item>
+                    </Menu>
+                </Col>
+                {
+                    isAuth
+                        ?
+                        <>
+                            <Col span = {1}>
+                                <Avatar src = {userAvatar != null ? userAvatar : defaultAvatar} />
+                            </Col>
+                            <Col span = {5}>
+                                <span className = {s.login}> {login} - <Button
+                                    onClick = {() => dispatch(logout())}>Выйти</Button> </span>
+                            </Col>
+                        </>
+                        :
+                        <Col span = {6}>
+                            <Button>
+                                <Link className = {s.login} to = {'/login'}>Войти</Link>
+                            </Button>
+                        </Col>
                 }
-            </div>
-        </header>
-    );
+            </Row>
+        </Header>
+    )
 }
 
-export default Header;
+export default AppHeader

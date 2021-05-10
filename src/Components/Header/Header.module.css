@@ -3,6 +3,15 @@
     background-color: yellow;
 }
 
+.login {
+    color: white;
+}
+
+.login button {
+    color: black;
+    display: inline-block;
+}
+
 .loginBlock {
     float: right;
     display: flex;

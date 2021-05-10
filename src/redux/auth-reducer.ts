@@ -94,6 +94,7 @@ export const logout = ():ThunkType => {
         let response = await authAPI.logout()
         if(response.data.resultCode === 0) {
             dispatch(actions.setAuthUserData(null, null, null, false));
+            dispatch(actions.setUserAvatar(null))
         }
     }
 }
