@@ -17,9 +17,11 @@ import AppHeader from './Components/Header/Header'
 
 const DialogsContainer = React.lazy(() => import('./Components/Dialogs/DialogsContainer'))
 const ProfileContainer = React.lazy(() => import('./Components/Profile/ProfileContainer'))
+const ChatPage = React.lazy(() => import('./pages/Chat/ChatPage'))
 
 const SuspendedDialogs = withSuspense(DialogsContainer)
 const SuspendedProfile = withSuspense(ProfileContainer)
+const SuspendedChatPage = withSuspense(ChatPage)
 
 type MapPropsType = ReturnType<typeof mapStateToProps>
 type DispatchPropsType = {
@@ -75,7 +77,7 @@ class App extends React.Component<MapPropsType & DispatchPropsType> {
                                     <Menu.Item key = '6'><Link to = '/developers'>Users</Link></Menu.Item>
                                 </SubMenu>
                                 <SubMenu key = 'sub3' icon = {<NotificationOutlined />} title = 'subnav 3'>
-                                    <Menu.Item key = '7'>option9</Menu.Item>
+                                    <Menu.Item key = '7'><Link to = '/chat'>Chat</Link></Menu.Item>
                                     <Menu.Item key = '8'>option10</Menu.Item>
                                     <Menu.Item key = '9'>option11</Menu.Item>
                                     <Menu.Item key = '10'>option12</Menu.Item>
@@ -89,6 +91,7 @@ class App extends React.Component<MapPropsType & DispatchPropsType> {
                                 <Route path = '/developers' render = {() => <UsersPage pageTitle = {'Samurai'} />} />
                                 <Route path = '/login' render = {() => <LoginPage />} />
                                 <Route exact path = '/' render = {() => <Redirect to = {'/profile'} />} />
+                                <Route exact path = '/chat' render = {() => <SuspendedChatPage />} />
                                 <Route exact path = '*' render = {() => <div>404 not found</div>} />
                             </Switch>
                         </Content>
